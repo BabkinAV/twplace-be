@@ -1,7 +1,7 @@
-
 import { Product } from '../../models/Product';
 
 import {
+  GraphQLEnumType,
   GraphQLID,
   GraphQLInt,
   GraphQLList,
@@ -21,6 +21,26 @@ const PriceType = new GraphQLObjectType({
   },
 });
 
+// Size type
+
+const SizeType = new GraphQLEnumType({
+  name: 'SizeType',
+  values: {
+    S: {
+      value: 'S',
+    },
+    M: {
+      value: 'M',
+    },
+    L: {
+      value: 'L',
+    },
+    XL: {
+      value: 'XL',
+    },
+  },
+});
+
 // Product type
 const ProductType = new GraphQLObjectType<
   { parameter1: string },
@@ -30,9 +50,10 @@ const ProductType = new GraphQLObjectType<
   fields: () => ({
     _id: { type: GraphQLID },
     title: { type: GraphQLString },
-    size: { type: GraphQLString },
+    color: { type: GraphQLString },
     imageLink: { type: GraphQLString },
     price: { type: PriceType },
+    size: {type: SizeType}
   }),
 });
 
