@@ -1,4 +1,5 @@
-import { dummyProducts } from '../../data/dummyFeaturedProductsList';
+
+import { Product } from '../../models/Product';
 
 import {
   GraphQLID,
@@ -27,11 +28,11 @@ const ProductType = new GraphQLObjectType<
 >({
   name: 'Product',
   fields: () => ({
-    id: { type: GraphQLID },
+    _id: { type: GraphQLID },
     title: { type: GraphQLString },
     size: { type: GraphQLString },
     imageLink: { type: GraphQLString },
-		price: {type: PriceType}
+    price: { type: PriceType },
   }),
 });
 
@@ -47,15 +48,21 @@ const RootQuery = new GraphQLObjectType<
   { parameter3: string },
   { parameter4: string }
 >({
-  name: 'RooQueryType',
+  name: 'RootQueryType',
   fields: {
+    products: {
+      type: new GraphQLList(ProductType),
+      resolve(parent, args) {
+        return Product.find();
+      },
+    },
     product: {
       type: ProductType,
       args: {
-        id: { type: GraphQLID },
+        _id: { type: GraphQLID },
       },
       resolve(parent, args, context, info) {
-        return dummyProducts.find(product => product.id === args.id);
+        return Product.findById(args._id);
       },
     },
   },

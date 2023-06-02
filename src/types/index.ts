@@ -1,11 +1,13 @@
+import { Types } from "mongoose";
+
 export interface productCategory {
-  id: string;
+  _id: string;
   categoryName: string;
   categoryImg: { categoryImagePath: string; altImageText: string };
 }
 
-export interface Product {
-	id: string,
+export interface IProduct {
+	_id: Types.ObjectId,
 	title: string,
 	price: {
 		priceCurrent: number,
@@ -18,7 +20,7 @@ export interface Product {
 }
 
 export interface CartProduct  {
-	product: Product,
+	product: IProduct,
 	quantity: number
 }
 
