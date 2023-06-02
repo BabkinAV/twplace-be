@@ -1,0 +1,74 @@
+[
+  {
+    "id": "pc001",
+    "categoryName": "Компьютеры и оргтехника",
+    "categoryImg": {
+      "categoryImagePath": "/img/productCategoryIcons/pcIcon.svg",
+      "altImageText": "Computer icon"
+    }
+  },
+  {
+    "id": "pc002",
+    "categoryName": "Электроника",
+    "categoryImg": {
+      "categoryImagePath": "/img/productCategoryIcons/plugIcon.svg",
+      "altImageText": "Plug icon"
+    }
+  },
+  {
+    "id": "pc003",
+    "categoryName": "Бытовая техника",
+    "categoryImg": {
+      "categoryImagePath": "/img/productCategoryIcons/microwaveIcon.svg",
+      "altImageText": "Microwave oven icon"
+    }
+  },
+  {
+    "id": "pc004",
+    "categoryName": "Одежда для женщин",
+    "categoryImg": {
+      "categoryImagePath": "/img/productCategoryIcons/dressIcon.svg",
+      "altImageText": "Dress icon"
+    }
+  },
+  {
+    "id": "pc005",
+    "categoryName": "Одежда для мужчин",
+    "categoryImg": {
+      "categoryImagePath": "/img/productCategoryIcons/tshirtIcon.svg",
+      "altImageText": "T-shirt icon"
+    }
+  },
+  {
+    "id": "pc007",
+    "categoryName": "Все для детей",
+    "categoryImg": {
+      "categoryImagePath": "/img/productCategoryIcons/babyIcon.svg",
+      "altImageText": "Baby icon"
+    }
+  },
+  {
+    "id": "pc008",
+    "categoryName": "Автотовары",
+    "categoryImg": {
+      "categoryImagePath": "/img/productCategoryIcons/wheelIcon.svg",
+      "altImageText": "Wheel icon"
+    }
+  },
+  {
+    "id": "pc009",
+    "categoryName": "Красота и здоровье",
+    "categoryImg": {
+      "categoryImagePath": "/img/productCategoryIcons/flowerIcon.svg",
+      "altImageText": "Flower icon"
+    }
+  },
+  {
+    "id": "pc010",
+    "categoryName": "Спорт и развлечения",
+    "categoryImg": {
+      "categoryImagePath": "/img/productCategoryIcons/ballIcon.svg",
+      "altImageText": "Ball icon"
+    }
+  }
+]
