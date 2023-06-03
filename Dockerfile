@@ -2,12 +2,8 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
 
 EXPOSE 8080
 
-CMD ["npm", "run", "dev"]
+# check if "node_modules" is present, install dependencies if not and run dev command afterwards 
+CMD [ -d "node_modules" ] && npm run dev || npm ci && npm run build && npm run dev
