@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from 'express';
+import cors from 'cors';
 import 'dotenv/config';
 
 import { graphqlHTTP } from 'express-graphql';
@@ -29,6 +30,8 @@ connectDB();
 //   },
 
 // }
+
+app.use(cors<Request>())
 
 app.use(
   '/graphql',
