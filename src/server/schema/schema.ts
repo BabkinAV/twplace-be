@@ -1,4 +1,5 @@
 import { Product } from '../../models/Product';
+import { Types } from 'mongoose';
 
 import {
   GraphQLEnumType,
@@ -53,7 +54,7 @@ const ProductType = new GraphQLObjectType<
     color: { type: GraphQLString },
     imageLink: { type: GraphQLString },
     price: { type: PriceType },
-    size: {type: SizeType}
+    size: { type: SizeType },
   }),
 });
 
@@ -71,7 +72,7 @@ const RootQuery = new GraphQLObjectType<
 >({
   name: 'RootQueryType',
   fields: {
-    products: {
+    featuredProducts: {
       type: new GraphQLList(ProductType),
       resolve(parent, args) {
         return Product.find();
@@ -84,6 +85,19 @@ const RootQuery = new GraphQLObjectType<
       },
       resolve(parent, args, context, info) {
         return Product.findById(args._id);
+      },
+    },
+    products: {
+      type: new GraphQLList(ProductType),
+      args: {
+        productsIds: { type: new GraphQLList(GraphQLID) },
+      },
+      resolve(parent, args) {
+        const searchArr = args.productsIds.map(
+          (el: string) => new Types.ObjectId(el)
+        );
+
+        return Product.find().where('_id').in(searchArr);
       },
     },
   },
