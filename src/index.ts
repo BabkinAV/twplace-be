@@ -13,6 +13,8 @@ const port = process.env.PORT || 5000;
 
 const app: Express = express();
 
+console.log('Hello');
+
 // connect to database
 connectDB();
 
@@ -26,19 +28,18 @@ connectDB();
 // // The root provides a resolver function for each API endpoint
 // const root = {
 //   hello: () => {
-//     return "Hello world!!!"
 //   },
 
 // }
 
-app.use(cors<Request>())
+app.use(cors<Request>());
 
 app.use(
   '/graphql',
   graphqlHTTP({
     schema,
     graphiql: true,
-		// graphiql: process.env.NODE_ENV === 'development'
+    // graphiql: process.env.NODE_ENV === 'development'
   })
 );
 
