@@ -24,5 +24,5 @@ jobs:
         script: |
           cd ~/twplace/twplace-be/;
           git pull;
-          docker compose  -f ~/twplace/docker-compose.yaml down;
+          docker compose  -f ~/twplace/docker-compose.yaml down --rmi;
           docker compose  -f ~/twplace/docker-compose.yaml up --build -d;
