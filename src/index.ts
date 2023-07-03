@@ -47,5 +47,5 @@ app.get('/test', (req: Request, res: Response, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server 8 is running at http://localhost:${port} !`);
+  console.log(`⚡️[server]: Server 9 is running at http://localhost:${port} !`);
 });
