@@ -7,7 +7,7 @@ import { buildSchema } from 'graphql';
 
 import connectDB from './server/config/db';
 
-import { schema } from './server/schema/schema';
+import { schema } from './graphql/schema/schema';
 
 const port = process.env.PORT || 5000;
 
@@ -47,5 +47,5 @@ app.get('/test', (req: Request, res: Response, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server 9 is running at http://localhost:${port} !`);
+  console.log(`⚡️[server]: Server is running at http://localhost:${port} !`);
 });

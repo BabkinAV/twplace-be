@@ -1,11 +1,16 @@
 import { Product } from '../../models/Product';
 import { Types } from 'mongoose';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken'
+
+import { User } from '../../models/User';
 
 import {
   GraphQLEnumType,
   GraphQLID,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
@@ -58,6 +63,16 @@ const ProductType = new GraphQLObjectType<
   }),
 });
 
+// User type
+const UserType = new GraphQLObjectType({
+  name: 'User',
+  fields: () => ({
+    _id: { type: GraphQLID },
+    email: { type: GraphQLString },
+    password: { type: GraphQLString },
+  }),
+});
+
 // Generic parameter for GraphqQLObjectType:
 
 // 1st parameter: type for parent object in resolver function
@@ -100,9 +115,39 @@ const RootQuery = new GraphQLObjectType<
         return Product.find().where('_id').in(searchArr);
       },
     },
+
+    // TODO: create login query
+  },
+});
+
+const mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    signup: {
+      type: UserType,
+      args: {
+        email: { type: GraphQLNonNull(GraphQLString) },
+        password: { type: GraphQLNonNull(GraphQLString) },
+      },
+      resolve(parent, args, context) {
+				// TODO: Implement args validation functionality
+        const email = args.email as string;
+        const password = args.password as string;
+        return bcrypt
+          .hash(password, 12)
+          .then(hashedPw => {
+            const user = new User({
+              email,
+              password: hashedPw,
+            });
+            return user.save();
+          })
+      },
+    },
   },
 });
 
 export const schema = new GraphQLSchema({
   query: RootQuery,
+  mutation,
 });
