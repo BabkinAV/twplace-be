@@ -1,9 +1,10 @@
 import { Product } from '../../models/Product';
-import { Types } from 'mongoose';
+import { Document, HydratedDocument, ObjectId, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 
-import { User } from '../../models/User';
+import { IUser, User } from '../../models/User';
+import { errorNameType, errorType } from '../../constants/ErrorTypes';
 
 import {
   GraphQLEnumType,
@@ -73,6 +74,16 @@ const UserType = new GraphQLObjectType({
   }),
 });
 
+// AuthData type
+
+const AuthDataType = new GraphQLObjectType({
+  name: 'AuthData',
+  fields: () => ({
+    token: { type: GraphQLString },
+    userId: { type: GraphQLString },
+  }),
+});
+
 // Generic parameter for GraphqQLObjectType:
 
 // 1st parameter: type for parent object in resolver function
@@ -116,7 +127,42 @@ const RootQuery = new GraphQLObjectType<
       },
     },
 
-    // TODO: create login query
+    login: {
+      type: AuthDataType,
+      args: {
+        email: { type: GraphQLNonNull(GraphQLString) },
+        password: { type: GraphQLNonNull(GraphQLString) },
+      },
+      resolve(parent, args, context) {
+        const email = args.email as string;
+        const password = args.password as string;
+        let userFound: HydratedDocument<IUser>;
+        return User.findOne({ email })
+          .then(user => {
+            if (!user) {
+              throw new Error(errorNameType.EMAIL_NOT_FOUND);
+            }
+
+            userFound = user;
+
+            return bcrypt.compare(password, user.password);
+          })
+          .then(isEqual => {
+            if (!isEqual) {
+              throw new Error(errorNameType.PASSWORD_IS_INCORRECT);
+            }
+            const token = jwt.sign(
+              {
+                userId: userFound._id.toString(),
+                email: userFound.email.toString(),
+              },
+              process.env.JWT_SECRET!,
+              { expiresIn: '1h' }
+            );
+            return { token, userId: userFound._id.toString() };
+          });
+      },
+    },
   },
 });
 
@@ -124,24 +170,22 @@ const mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
     signup: {
-      type: UserType,
+      type: GraphQLNonNull(UserType),
       args: {
         email: { type: GraphQLNonNull(GraphQLString) },
         password: { type: GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args, context) {
-				// TODO: Implement args validation functionality
+        // TODO: Implement args validation functionality
         const email = args.email as string;
         const password = args.password as string;
-        return bcrypt
-          .hash(password, 12)
-          .then(hashedPw => {
-            const user = new User({
-              email,
-              password: hashedPw,
-            });
-            return user.save();
-          })
+        return bcrypt.hash(password, 12).then(hashedPw => {
+          const user = new User({
+            email,
+            password: hashedPw,
+          });
+          return user.save();
+        });
       },
     },
   },

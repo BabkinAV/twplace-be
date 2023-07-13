@@ -8,6 +8,8 @@ import { buildSchema } from 'graphql';
 import connectDB from './server/config/db';
 
 import { schema } from './graphql/schema/schema';
+import { getErrorCode } from './helpers/getErrorCode';
+import { errorNameType } from './constants/ErrorTypes';
 
 const port = process.env.PORT || 5000;
 
@@ -38,6 +40,29 @@ app.use(
   graphqlHTTP({
     schema,
     graphiql: true,
+		
+		customFormatErrorFn(err) {
+			// Inspired by https://stackoverflow.com/a/57387596/12246209
+    
+
+			const isErrorTypeEnum = (message: string): message is errorNameType => {
+				return Object.values(errorNameType).includes(message as errorNameType);
+			};
+			if (isErrorTypeEnum(err.message)) {
+				const error = getErrorCode(err.message);
+
+				return {
+					message :error.message,
+					status: error.statusCode
+				};
+
+			}
+
+			return {
+				message: 'Server error',
+				status: '500'
+			}
+    },
     // graphiql: process.env.NODE_ENV === 'development'
   })
 );
