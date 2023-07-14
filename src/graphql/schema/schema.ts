@@ -6,6 +6,10 @@ import jwt from 'jsonwebtoken';
 import { IUser, User } from '../../models/User';
 import { errorNameType, errorType } from '../../constants/ErrorTypes';
 
+
+import { Request } from 'express';
+
+
 import {
   GraphQLEnumType,
   GraphQLID,
@@ -94,7 +98,7 @@ const AuthDataType = new GraphQLObjectType({
 
 const RootQuery = new GraphQLObjectType<
   { parameter3: string },
-  { parameter4: string }
+  Request
 >({
   name: 'RootQueryType',
   fields: {
@@ -118,10 +122,13 @@ const RootQuery = new GraphQLObjectType<
       args: {
         productsIds: { type: new GraphQLList(GraphQLID) },
       },
-      resolve(parent, args) {
+      resolve(parent, args, ctx) {
         const searchArr = args.productsIds.map(
           (el: string) => new Types.ObjectId(el)
         );
+
+				console.log(ctx.isAuth);
+
 
         return Product.find().where('_id').in(searchArr);
       },

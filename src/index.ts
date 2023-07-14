@@ -10,6 +10,15 @@ import connectDB from './server/config/db';
 import { schema } from './graphql/schema/schema';
 import { getErrorCode } from './helpers/getErrorCode';
 import { errorNameType } from './constants/ErrorTypes';
+import auth from './middleware/auth';
+
+declare module "express-serve-static-core" {
+  export interface Request {
+    isAuth?: boolean;
+  }
+}
+
+
 
 const port = process.env.PORT || 5000;
 
@@ -19,27 +28,54 @@ const app: Express = express();
 // connect to database
 connectDB();
 
-// Construct a schema, using GraphQL schema language
-// const schema = buildSchema(`
-//   type Query {
-//     hello: String
-//   }
-// `)
-
-// // The root provides a resolver function for each API endpoint
-// const root = {
-//   hello: () => {
-//   },
-
-// }
-
 app.use(cors<Request>());
+
+app.use(auth)
+
+
+// app.use(
+//   '/graphql',
+//   graphqlHTTP(() => {
+// 		return {
+// 			schema,
+// 			graphiql: true,
+	
+// 			// context: request.isAuth,
+			
+// 			customFormatErrorFn(err) {
+// 				// Inspired by https://stackoverflow.com/a/57387596/12246209
+			
+	
+// 				const isErrorTypeEnum = (message: string): message is errorNameType => {
+// 					return Object.values(errorNameType).includes(message as errorNameType);
+// 				};
+// 				if (isErrorTypeEnum(err.message)) {
+// 					const error = getErrorCode(err.message);
+	
+// 					return {
+// 						message :error.message,
+// 						status: error.statusCode
+// 					};
+	
+// 				}
+	
+// 				return {
+// 					message: 'Server error',
+// 					status: '500'
+// 				}
+// 			},
+// 			// graphiql: process.env.NODE_ENV === 'development'
+// 		}
+// 	})
+// )
 
 app.use(
   '/graphql',
   graphqlHTTP({
     schema,
     graphiql: true,
+
+		// context: request.isAuth,
 		
 		customFormatErrorFn(err) {
 			// Inspired by https://stackoverflow.com/a/57387596/12246209
