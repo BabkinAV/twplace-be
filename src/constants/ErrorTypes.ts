@@ -6,7 +6,8 @@
 enum errorNameType {
 	EMAIL_NOT_FOUND = "EMAIL_NOT_FOUND",
 	SERVER_ERROR = 'SERVER_ERROR',
-	PASSWORD_IS_INCORRECT = 'PASSWORD_IS_INCORRECT' 
+	PASSWORD_IS_INCORRECT = 'PASSWORD_IS_INCORRECT',
+	NOT_AUTHORIZED = 'NOT_AUTHORIZED'
 }
 
 const errorType = {
@@ -22,6 +23,11 @@ const errorType = {
     message: 'Password is incorrect.',
     statusCode: 401,
   },
+	NOT_AUTHORIZED: {
+		message: 'Not authorized',
+		statusCode: '401'
+	}
 };
+
 
 export { errorNameType, errorType };

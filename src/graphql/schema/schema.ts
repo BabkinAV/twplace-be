@@ -12,6 +12,7 @@ import { Request } from 'express';
 
 import {
   GraphQLEnumType,
+  GraphQLError,
   GraphQLID,
   GraphQLInt,
   GraphQLList,
@@ -127,12 +128,22 @@ const RootQuery = new GraphQLObjectType<
           (el: string) => new Types.ObjectId(el)
         );
 
-				console.log(ctx.isAuth);
+				
 
 
         return Product.find().where('_id').in(searchArr);
       },
     },
+		user: {
+			type: GraphQLString,
+			resolve(parent, args, ctx) {
+				if (!ctx.isAuth ) {
+					throw new GraphQLError(errorNameType.NOT_AUTHORIZED)
+				}
+
+				return 'UserID: ' + ctx.userId
+			}
+		},
 
     login: {
       type: AuthDataType,
@@ -147,7 +158,7 @@ const RootQuery = new GraphQLObjectType<
         return User.findOne({ email })
           .then(user => {
             if (!user) {
-              throw new Error(errorNameType.EMAIL_NOT_FOUND);
+              throw new GraphQLError(errorNameType.EMAIL_NOT_FOUND);
             }
 
             userFound = user;
@@ -156,7 +167,7 @@ const RootQuery = new GraphQLObjectType<
           })
           .then(isEqual => {
             if (!isEqual) {
-              throw new Error(errorNameType.PASSWORD_IS_INCORRECT);
+              throw new GraphQLError(errorNameType.PASSWORD_IS_INCORRECT);
             }
             const token = jwt.sign(
               {
@@ -197,6 +208,7 @@ const mutation = new GraphQLObjectType({
     },
   },
 });
+
 
 export const schema = new GraphQLSchema({
   query: RootQuery,

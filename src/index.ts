@@ -15,6 +15,7 @@ import auth from './middleware/auth';
 declare module "express-serve-static-core" {
   export interface Request {
     isAuth?: boolean;
+		userId?: string;
   }
 }
 
@@ -32,42 +33,6 @@ app.use(cors<Request>());
 
 app.use(auth)
 
-
-// app.use(
-//   '/graphql',
-//   graphqlHTTP(() => {
-// 		return {
-// 			schema,
-// 			graphiql: true,
-	
-// 			// context: request.isAuth,
-			
-// 			customFormatErrorFn(err) {
-// 				// Inspired by https://stackoverflow.com/a/57387596/12246209
-			
-	
-// 				const isErrorTypeEnum = (message: string): message is errorNameType => {
-// 					return Object.values(errorNameType).includes(message as errorNameType);
-// 				};
-// 				if (isErrorTypeEnum(err.message)) {
-// 					const error = getErrorCode(err.message);
-	
-// 					return {
-// 						message :error.message,
-// 						status: error.statusCode
-// 					};
-	
-// 				}
-	
-// 				return {
-// 					message: 'Server error',
-// 					status: '500'
-// 				}
-// 			},
-// 			// graphiql: process.env.NODE_ENV === 'development'
-// 		}
-// 	})
-// )
 
 app.use(
   '/graphql',
