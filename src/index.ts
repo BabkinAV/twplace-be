@@ -60,7 +60,7 @@ app.use(
 			}
 
 			return {
-				message: 'Server error',
+				message: err.message || 'Server error',
 				status: '500'
 			}
     },
@@ -73,5 +73,5 @@ app.get('/test', (req: Request, res: Response, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port} !`);
+  console.log(`⚡️[server]: Server 1 is running at http://localhost:${port} !`);
 });
