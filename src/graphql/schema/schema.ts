@@ -6,14 +6,13 @@ import jwt from 'jsonwebtoken';
 import { IUser, User } from '../../models/User';
 import { errorNameType, errorType } from '../../constants/ErrorTypes';
 
-
 import { Request } from 'express';
-
 
 import {
   GraphQLEnumType,
   GraphQLError,
   GraphQLID,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -89,6 +88,24 @@ const AuthDataType = new GraphQLObjectType({
   }),
 });
 
+// OrderedItemType
+
+const OrderedItemType = new GraphQLObjectType({
+  name: 'OrderedProductType',
+  fields: () => ({
+    product: { type: ProductType },
+    quantity: { type: new GraphQLNonNull(GraphQLInt) },
+  }),
+});
+
+const OrderType = new GraphQLObjectType({
+  name: 'Order',
+  fields: () => ({
+    _id: { type: GraphQLID },
+    products: { type: new GraphQLList(OrderedItemType) },
+  }),
+});
+
 // Generic parameter for GraphqQLObjectType:
 
 // 1st parameter: type for parent object in resolver function
@@ -97,10 +114,7 @@ const AuthDataType = new GraphQLObjectType({
 
 // see https://graphql.org/learn/execution/#root-fields-resolvers
 
-const RootQuery = new GraphQLObjectType<
-  { parameter3: string },
-  Request
->({
+const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
   name: 'RootQueryType',
   fields: {
     featuredProducts: {
@@ -128,30 +142,28 @@ const RootQuery = new GraphQLObjectType<
           (el: string) => new Types.ObjectId(el)
         );
 
-				
-
-
         return Product.find().where('_id').in(searchArr);
       },
     },
-		user: {
-			type: GraphQLString,
-			resolve(parent, args, ctx) {
-				if (!ctx.isAuth ) {
-					throw new GraphQLError(errorNameType.NOT_AUTHORIZED)
-				}
+    user: {
+      type: GraphQLString,
+      resolve(parent, args, ctx) {
+        if (!ctx.isAuth) {
+          throw new GraphQLError(errorNameType.NOT_AUTHORIZED);
+        }
 
-				return 'UserID: ' + ctx.userId
-			}
-		},
+        return 'UserID: ' + ctx.userId;
+      },
+    },
 
     login: {
       type: AuthDataType,
       args: {
-        email: { type: GraphQLNonNull(GraphQLString) },
-        password: { type: GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args, context) {
+				console.log(args);
         const email = args.email as string;
         const password = args.password as string;
         let userFound: HydratedDocument<IUser>;
@@ -184,14 +196,22 @@ const RootQuery = new GraphQLObjectType<
   },
 });
 
+const placedItemType = new GraphQLInputObjectType({
+	name: 'placedItemType',
+	fields: () => ({
+		product: { type: new GraphQLNonNull(GraphQLString) },
+		quantity: { type: new GraphQLNonNull(GraphQLInt) },
+	}),
+})
+
 const mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
     signup: {
       type: GraphQLNonNull(UserType),
       args: {
-        email: { type: GraphQLNonNull(GraphQLString) },
-        password: { type: GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args, context) {
         // TODO: Implement args validation functionality
@@ -206,9 +226,27 @@ const mutation = new GraphQLObjectType({
         });
       },
     },
+    placeOrder: {
+      type: new GraphQLObjectType({
+        name: 'PlaceOrderType',
+        fields: {
+          orderId: { type: new GraphQLNonNull(GraphQLString) },
+        },
+      }),
+      args: {
+        orderContents: {
+          type: GraphQLList(placedItemType),
+        },
+      },
+      resolve: (parent, args, context) => {
+				const orderContents = JSON.parse(JSON.stringify(args.orderContents))
+        console.log( orderContents);
+        let response = { orderId: 'Order has been placed!' };
+        return response;
+      },
+    },
   },
 });
-
 
 export const schema = new GraphQLSchema({
   query: RootQuery,
