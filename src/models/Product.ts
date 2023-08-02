@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { IProduct } from '../types';
 
-const ProductSchema = new Schema<IProduct>({
+export const ProductSchema = new Schema<IProduct>({
   title: { type: String, required: true },
   imageLink: { type: String, required: true },
   price: {

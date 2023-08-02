@@ -6,7 +6,11 @@ export interface productCategory {
   categoryImg: { categoryImagePath: string; altImageText: string };
 }
 
-export interface IProduct {
+interface DocumentResult<T> {
+	_doc: T;
+}
+
+export interface IProduct extends DocumentResult<IProduct> {
 	_id: Types.ObjectId,
 	title: string,
 	price: {
