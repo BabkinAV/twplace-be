@@ -4,7 +4,8 @@ import { HydratedDocument, Types } from 'mongoose';
 import { Product } from '../../models/Product';
 
 import { errorNameType } from '../../constants/ErrorTypes';
-import { IUser, User } from '../../models/User';
+import {  User } from '../../models/User';
+import { IUser } from '../../types';
 
 import { Request } from 'express';
 
@@ -18,11 +19,8 @@ import {
 } from 'graphql';
 import { AuthDataType, ProductType } from './types';
 
-// Price type
 
-
-
-// Generic parameter for GraphqQLObjectType:
+//INFO: Generic parameter for GraphqQLObjectType:
 
 // 1st parameter: type for parent object in resolver function
 
@@ -61,6 +59,7 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
         return Product.find().where('_id').in(searchArr);
       },
     },
+		//NOTE:  PROTECTED QUERY EXAMPLE
     user: {
       type: GraphQLString,
       resolve(parent, args, ctx) {

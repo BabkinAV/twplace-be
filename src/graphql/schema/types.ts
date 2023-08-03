@@ -1,5 +1,7 @@
 import { GraphQLEnumType, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 
+
+// Price type
 const PriceType = new GraphQLObjectType({
   name: 'PriceType',
   fields: {

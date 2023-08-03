@@ -32,7 +32,6 @@ const auth  = (req: Request, res: Response, next: NextFunction) => {
 		return next();
 	
 	}
-	// TODO: addUserId to req object
 	req.userId = decodedToken.userId;
 	req.isAuth = true;
 	next();

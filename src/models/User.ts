@@ -1,9 +1,6 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-export interface IUser {
-  email: string;
-  password: string;
-}
+import { IUser } from '../types';
 
 const userSchema = new Schema<IUser>({
   email: { type: String, required: true },
