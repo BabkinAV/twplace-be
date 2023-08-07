@@ -78,7 +78,6 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
         password: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args, context) {
-        console.log(args);
         const email = args.email as string;
         const password = args.password as string;
         let userFound: HydratedDocument<IUser>;

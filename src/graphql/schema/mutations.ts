@@ -5,13 +5,13 @@ import { User } from '../../models/User';
 
 import { Request } from 'express';
 import {
-	GraphQLError,
-	GraphQLInputObjectType,
-	GraphQLInt,
-	GraphQLList,
-	GraphQLNonNull,
-	GraphQLObjectType,
-	GraphQLString,
+  GraphQLError,
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from 'graphql';
 import { errorNameType } from '../../constants/ErrorTypes';
 import { Order } from '../../models/Order';
@@ -48,24 +48,30 @@ const RootMutation = new GraphQLObjectType<unknown, Request>({
       }),
       args: {
         orderContents: {
-          type: GraphQLList(
-            new GraphQLInputObjectType({
-              name: 'placedItemType',
-              fields: () => ({
-                productId: { type: new GraphQLNonNull(GraphQLString) },
-                quantity: { type: new GraphQLNonNull(GraphQLInt) },
-              }),
-            })
+          type: GraphQLNonNull(
+            GraphQLList(
+              GraphQLNonNull(
+                new GraphQLInputObjectType({
+                  name: 'placedItemType',
+                  fields: () => ({
+                    productId: { type: new GraphQLNonNull(GraphQLString) },
+                    quantity: { type: new GraphQLNonNull(GraphQLInt) },
+                  }),
+                })
+              )
+            )
           ),
         },
       },
       resolve: (parent, args, ctx) => {
-				if (!ctx.isAuth) {
+        if (!ctx.isAuth) {
           throw new GraphQLError(errorNameType.NOT_AUTHORIZED);
         }
         const orderContents = JSON.parse(
           JSON.stringify(args.orderContents)
         ) as { productId: string; quantity: number }[];
+        if (!orderContents.length)
+          throw new GraphQLError('Incorrect input data');
         const productIds = orderContents.map(el => el.productId);
         return Product.find()
           .where('_id')
@@ -77,21 +83,18 @@ const RootMutation = new GraphQLObjectType<unknown, Request>({
                 const foundItem = productItems.find(item => {
                   return item._id.toString() === el.productId;
                 });
-								if (foundItem) {
-				
-
-									const {_id, ...productProperties} = foundItem._doc;
-									return {
-										product: productProperties,
-										refProductId: _id,
-										quantity: el.quantity,
-									};
-								}
-								else {
-									throw new GraphQLError('Cart item not found')
-								}
+                if (foundItem) {
+                  const { _id, ...productProperties } = foundItem._doc;
+                  return {
+                    product: productProperties,
+                    refProductId: _id,
+                    quantity: el.quantity,
+                  };
+                } else {
+                  throw new GraphQLError('Cart item not found');
+                }
               }),
-							userId: ctx.userId
+              userId: ctx.userId,
             };
             return Order.create(dbInputArr);
           })
@@ -100,8 +103,8 @@ const RootMutation = new GraphQLObjectType<unknown, Request>({
             return response;
           })
           .catch(err => {
-						console.log(err);
-						throw new GraphQLError('Incorrect input data')
+            console.log(err);
+            throw new GraphQLError('Incorrect input data');
           });
       },
     },
