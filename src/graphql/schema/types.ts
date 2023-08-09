@@ -1,5 +1,13 @@
-import { GraphQLEnumType, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
-
+import {
+  GraphQLEnumType,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from 'graphql';
 
 // Price type
 const PriceType = new GraphQLObjectType({
@@ -81,8 +89,30 @@ const OrderType = new GraphQLObjectType({
   name: 'Order',
   fields: () => ({
     _id: { type: GraphQLID },
-    products: { type: new GraphQLList(OrderedItemType) },
+    createdAt: { type: GraphQLString },
+		updatedAt: {type: GraphQLString},
+    total: { type: GraphQLFloat },
+    products: {
+      type: GraphQLList(
+        new GraphQLObjectType({
+          name: 'orderItem',
+          fields: () => ({
+            product: { type: ProductType },
+						refProductId: {type: GraphQLID},
+            quantity:{type: GraphQLInt},
+          }),
+        })
+      ),
+    },
   }),
 });
 
-export {PriceType, SizeType, ProductType,  UserType, AuthDataType, OrderedItemType, OrderType}
+export {
+  PriceType,
+  SizeType,
+  ProductType,
+  UserType,
+  AuthDataType,
+  OrderedItemType,
+	OrderType
+};

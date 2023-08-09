@@ -4,21 +4,21 @@ import { HydratedDocument, Types } from 'mongoose';
 import { Product } from '../../models/Product';
 
 import { errorNameType } from '../../constants/ErrorTypes';
-import {  User } from '../../models/User';
+import { User } from '../../models/User';
 import { IUser } from '../../types';
 
 import { Request } from 'express';
 
 import {
-	GraphQLError,
-	GraphQLID,
-	GraphQLList,
-	GraphQLNonNull,
-	GraphQLObjectType,
-	GraphQLString
+  GraphQLError,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from 'graphql';
-import { AuthDataType, ProductType } from './types';
-
+import { AuthDataType, OrderType, ProductType } from './types';
+import { Order } from '../../models/Order';
 
 //INFO: Generic parameter for GraphqQLObjectType:
 
@@ -59,7 +59,7 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
         return Product.find().where('_id').in(searchArr);
       },
     },
-		//NOTE:  PROTECTED QUERY EXAMPLE
+    //NOTE:  PROTECTED QUERY EXAMPLE
     user: {
       type: GraphQLString,
       resolve(parent, args, ctx) {
@@ -105,6 +105,27 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
             );
             return { token, userId: userFound._id.toString() };
           });
+      },
+    },
+    orderHistory: {
+      type: new GraphQLList(OrderType),
+      resolve(parent, args, ctx) {
+        if (!ctx.isAuth) {
+          throw new GraphQLError(errorNameType.NOT_AUTHORIZED);
+        }
+        // TODO: write a Mongoose query here...
+        return Order.find({ userId: ctx.userId })
+          .exec()
+          .then(dataArr =>
+            dataArr.map(el => {
+              let totalOrderPrice = el.products.reduce(
+                (total, currProduct) =>
+                  total + currProduct.product.price.priceCurrent * currProduct.quantity,
+                0
+              );
+              return Object.assign(el, { total: totalOrderPrice });
+            })
+          );
       },
     },
   },
