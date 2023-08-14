@@ -99,6 +99,7 @@ const OrderType = new GraphQLObjectType({
           fields: () => ({
             product: { type: ProductType },
 						refProductId: {type: GraphQLID},
+						totalProductPrice: {type: GraphQLInt},
             quantity:{type: GraphQLInt},
           }),
         })

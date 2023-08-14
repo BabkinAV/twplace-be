@@ -5,7 +5,7 @@ import { Product } from '../../models/Product';
 
 import { errorNameType } from '../../constants/ErrorTypes';
 import { User } from '../../models/User';
-import { IUser } from '../../types';
+import { IOrder, IUser } from '../../types';
 
 import { Request } from 'express';
 
@@ -101,26 +101,32 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
                 email: userFound.email.toString(),
               },
               process.env.JWT_SECRET!,
-              { expiresIn: '1h' }
+              { expiresIn: '1d' }
             );
             return { token, userId: userFound._id.toString() };
           });
       },
     },
-    orderHistory: {
+    orders: {
       type: new GraphQLList(OrderType),
       resolve(parent, args, ctx) {
         if (!ctx.isAuth) {
           throw new GraphQLError(errorNameType.NOT_AUTHORIZED);
         }
-        // TODO: write a Mongoose query here...
-        return Order.find({ userId: ctx.userId })
+        return Order.find<IOrder>({ userId: ctx.userId })
           .exec()
           .then(dataArr =>
             dataArr.map(el => {
+              el.products.map(productEl =>
+                Object.assign(productEl, {
+                  totalProductPrice:
+                    productEl.product.price.priceCurrent * productEl.quantity,
+                })
+              );
               let totalOrderPrice = el.products.reduce(
                 (total, currProduct) =>
-                  total + currProduct.product.price.priceCurrent * currProduct.quantity,
+                  total +
+                  currProduct.product.price.priceCurrent * currProduct.quantity,
                 0
               );
               return Object.assign(el, { total: totalOrderPrice });

@@ -33,10 +33,12 @@ export interface IProduct extends DocumentResult<IProduct> {
 
 export interface IOrder extends DocumentWithTimestampsResult<IOrder> {
   products: {
-    product: IProduct & { refProductId: Types.ObjectId };
+    product: IProduct;
     quantity: number;
+		refProductId: Types.ObjectId;
   }[];
   userId: Types.ObjectId;
+	_id: Types.ObjectId
 }
 
 export interface IUser extends DocumentResult<IUser> {
