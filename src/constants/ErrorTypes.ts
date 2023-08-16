@@ -17,39 +17,39 @@ enum errorNameType {
 
 const errorType = {
   EMAIL_NOT_FOUND: {
-    message: 'Email not found.',
+    message: 'Email не найден',
     statusCode: 404,
   },
   SERVER_ERROR: {
-    message: 'Server error.',
+    message: 'Ошибка сервера.',
     statusCode: 500,
   },
   PASSWORD_IS_INCORRECT: {
-    message: 'Password is incorrect.',
+    message: 'Пароль неверный',
     statusCode: 401,
   },
 	NOT_AUTHORIZED: {
-		message: 'Not authorized',
+		message: 'Запрос неавторизован',
 		statusCode: 401
 	},
 	EMAIL_IS_INCORRECT: {
-    message: 'Email is incorrect.',
+    message: 'Email неверный.',
     statusCode: 422,
   },
 	USER_EMAIL_EXISTS: {
-    message: 'User email already exists',
+    message: 'Пользователь с таким email уже существует',
     statusCode: 422,
   },
 	COULD_NOT_PROCESS: {
-    message: 'Server could not process your request',
+    message: 'Сервер не смог обработать запрос',
     statusCode: 422,
   },
 	PASSWORD_LENGTH_IS_INCORRECT: {
-		message: 'Password should contain at least 6 characters',
+		message: 'Пароль должен содержать минимум 6 символов',
     statusCode: 422,
 	},
 	PASSWORDS_DO_NOT_MATCH: {
-		message: 'Passwords do not match',
+		message: 'Пароли не совпадают',
     statusCode: 422,
 	}
 	
