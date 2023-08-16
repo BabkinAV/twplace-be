@@ -1,42 +1,77 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import validator from 'validator';
 import { Product } from '../../models/Product';
 
 import { User } from '../../models/User';
 
 import { Request } from 'express';
 import {
-  GraphQLError,
-  GraphQLInputObjectType,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
+	GraphQLError,
+	GraphQLInputObjectType,
+	GraphQLInt,
+	GraphQLList,
+	GraphQLNonNull,
+	GraphQLObjectType,
+	GraphQLString,
 } from 'graphql';
 import { errorNameType } from '../../constants/ErrorTypes';
+import sanitizeTextInput from '../../helpers/sanitizeTextInput';
 import { Order } from '../../models/Order';
-import { UserType } from './types';
+import { AuthDataType } from './types';
 
 const RootMutation = new GraphQLObjectType<unknown, Request>({
   name: 'Mutation',
   fields: {
     signup: {
-      type: GraphQLNonNull(UserType),
+      type: AuthDataType,
       args: {
         email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
+        passwordConfirmation: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args, context) {
-        // TODO: Implement args validation functionality
-        const email = args.email as string;
-        const password = args.password as string;
-        return bcrypt.hash(password, 12).then(hashedPw => {
-          const user = new User({
-            email,
-            password: hashedPw,
+        const email = sanitizeTextInput(args.email as string);
+        const password = sanitizeTextInput(args.password as string);
+				if (!validator.isEmail(email)) {
+					throw new GraphQLError(errorNameType.EMAIL_IS_INCORRECT)
+				}
+				if (!validator.isLength(password, {min: 6})) {
+					throw new GraphQLError(errorNameType.PASSWORD_LENGTH_IS_INCORRECT)
+				}
+				const passwordConfirmation = sanitizeTextInput(args.passwordConfirmation as string);
+
+				if (password !== passwordConfirmation) {
+					throw new GraphQLError(errorNameType.PASSWORDS_DO_NOT_MATCH)
+				}
+
+
+
+        return bcrypt
+          .hash(password, 12)
+          .then(hashedPw => {
+            const user = new User({
+              email,
+              password: hashedPw,
+            });
+            return user.save();
+          })
+          .then(user => {
+            const token = jwt.sign(
+              {
+                userId: user._id.toString(),
+                email: user.email.toString(),
+              },
+              process.env.JWT_SECRET!,
+              { expiresIn: '1d' }
+            );
+            return { token, userId: user._id.toString() };
+          })
+          .catch(err => {
+            if (err?.code === 11000) {
+              throw new GraphQLError(errorNameType.USER_EMAIL_EXISTS);
+            } else throw new GraphQLError(errorNameType.COULD_NOT_PROCESS);
           });
-          return user.save();
-        });
       },
     },
     placeOrder: {

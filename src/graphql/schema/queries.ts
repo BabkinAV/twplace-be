@@ -10,15 +10,17 @@ import { IOrder, IUser } from '../../types';
 import { Request } from 'express';
 
 import {
-  GraphQLError,
-  GraphQLID,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
+	GraphQLError,
+	GraphQLID,
+	GraphQLList,
+	GraphQLNonNull,
+	GraphQLObjectType,
+	GraphQLString,
 } from 'graphql';
-import { AuthDataType, OrderType, ProductType } from './types';
+import validator from 'validator';
+import sanitizeTextInput from '../../helpers/sanitizeTextInput';
 import { Order } from '../../models/Order';
+import { AuthDataType, OrderType, ProductType } from './types';
 
 //INFO: Generic parameter for GraphqQLObjectType:
 
@@ -78,8 +80,14 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
         password: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args, context) {
-        const email = args.email as string;
-        const password = args.password as string;
+        const email = sanitizeTextInput(args.email as string);
+        const password = sanitizeTextInput(args.password as string);
+				if (!validator.isEmail(email)) {
+					throw new GraphQLError(errorNameType.EMAIL_IS_INCORRECT)
+				}
+				if (!validator.isLength(password, {min: 6})) {
+					throw new GraphQLError(errorNameType.PASSWORD_LENGTH_IS_INCORRECT)
+				}
         let userFound: HydratedDocument<IUser>;
         return User.findOne({ email })
           .then(user => {
