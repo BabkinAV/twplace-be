@@ -14,4 +14,9 @@ export const ProductSchema = new Schema<IProduct>({
 });
 
 
+// INFO: Mongoose indices for text search: https://stackoverflow.com/a/28775709
+
+ProductSchema.index({title: 'text', color: 'text'});
+
+
 export const Product = model<IProduct>('Product', ProductSchema);
