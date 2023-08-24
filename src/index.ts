@@ -25,6 +25,8 @@ const port = process.env.PORT || 5000;
 
 const app: Express = express();
 
+app.use(express.static('public'))
+
 
 // connect to database
 connectDB();

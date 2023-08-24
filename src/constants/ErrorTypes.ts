@@ -1,8 +1,3 @@
-// const errorName = {
-//   USER_ALREADY_EXISTS: 'USER_ALREADY_EXISTS',
-//   SERVER_ERROR: 'SERVER_ERROR',
-// };
-
 enum errorNameType {
 	EMAIL_NOT_FOUND = "EMAIL_NOT_FOUND",
 	SERVER_ERROR = 'SERVER_ERROR',
