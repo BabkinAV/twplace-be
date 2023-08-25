@@ -34,7 +34,7 @@ import { AuthDataType, OrderType, ProductType } from './types';
 const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
   name: 'RootQueryType',
   fields: {
-    featuredProducts: {
+    products: {
       type: new GraphQLList(ProductType),
       args: {
         isFeatured: { type: GraphQLBoolean },
@@ -51,6 +51,13 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
         }
       },
     },
+    featuredProducts: {
+      type: new GraphQLList(ProductType),
+      
+      resolve(parent, args) {
+        return Product.find({ featured: true });
+      },
+    },
     product: {
       type: ProductType,
       args: {
@@ -58,19 +65,6 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
       },
       resolve(parent, args, context, info) {
         return Product.findById(args._id);
-      },
-    },
-    products: {
-      type: new GraphQLList(ProductType),
-      args: {
-        productsIds: { type: new GraphQLList(GraphQLID) },
-      },
-      resolve(parent, args, ctx) {
-        const searchArr = args.productsIds.map(
-          (el: string) => new Types.ObjectId(el)
-        );
-
-        return Product.find().where('_id').in(searchArr);
       },
     },
     productSearch: {
