@@ -51,13 +51,6 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
         }
       },
     },
-    featuredProducts: {
-      type: new GraphQLList(ProductType),
-      
-      resolve(parent, args) {
-        return Product.find({ featured: true });
-      },
-    },
     product: {
       type: ProductType,
       args: {
