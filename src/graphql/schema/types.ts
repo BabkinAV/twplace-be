@@ -1,4 +1,5 @@
 import {
+	GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFloat,
   GraphQLID,
@@ -52,6 +53,7 @@ const ProductType = new GraphQLObjectType<
     imageLink: { type: GraphQLString },
     price: { type: PriceType },
     size: { type: SizeType },
+		featured: {type: GraphQLBoolean}
   }),
 });
 

@@ -10,6 +10,7 @@ import { IOrder, IUser } from '../../types';
 import { Request } from 'express';
 
 import {
+  GraphQLBoolean,
   GraphQLError,
   GraphQLID,
   GraphQLList,
@@ -35,8 +36,19 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
   fields: {
     featuredProducts: {
       type: new GraphQLList(ProductType),
+      args: {
+        isFeatured: { type: GraphQLBoolean },
+      },
       resolve(parent, args) {
-        return Product.find();
+        if (args.isFeatured) {
+          return Product.find({ featured: true });
+        } else {
+					return Product.find({
+						$or: [
+							{ featured: { $exists:false } },
+							{ featured: false }
+						]});
+        }
       },
     },
     product: {
@@ -68,8 +80,7 @@ const RootQuery = new GraphQLObjectType<{ parameter3: string }, Request>({
       },
       resolve(parent, args) {
         const searchStr = args.searchStr as string;
-        return Product.find({ $text: { $search: searchStr } })
-          .exec()
+        return Product.find({ $text: { $search: searchStr } }).exec();
       },
     },
     //NOTE:  PROTECTED QUERY EXAMPLE

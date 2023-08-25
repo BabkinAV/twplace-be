@@ -11,6 +11,7 @@ export const ProductSchema = new Schema<IProduct>({
   },
   color: { type: String, required: true },
   size: { type: String, required: true, enum: ['S', 'M', 'L', 'XL'] },
+	featured: {type: Boolean, required: false}
 });
 
 

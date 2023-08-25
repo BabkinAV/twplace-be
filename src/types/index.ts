@@ -29,6 +29,8 @@ export interface IProduct extends DocumentResult<IProduct> {
   imageLink: string;
   color: string;
   size: Size;
+	featured?: boolean
+
 }
 
 export interface IOrder extends DocumentWithTimestampsResult<IOrder> {
